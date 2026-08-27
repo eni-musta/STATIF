@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StatiF — Knowledge Check</title>
+<style>
+  :root{
+    --paper:#eef2f6; --surface:#ffffff; --surface-2:#f4f7fa;
+    --ink:#141d28; --muted:#5a6b7b; --line:#dbe3ea; --line-strong:#c4d0da;
+    --accent:#0e8a86; --accent-ink:#0a615e; --accent-soft:#dcefee;
+    --ok:#2f9e68; --ok-soft:#e2f2e9; --bad:#d64a44; --bad-soft:#fbe6e5;
+    --amber:#dd9021;
+    --shadow:0 1px 2px rgba(20,29,40,.06),0 8px 30px rgba(20,29,40,.08);
+    --radius:14px;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --paper:#0d141b; --surface:#151f29; --surface-2:#1a2632;
+      --ink:#e9f0f5; --muted:#93a5b4; --line:#26323e; --line-strong:#33424f;
+      --accent:#25b3ab; --accent-ink:#8fe0da; --accent-soft:#123331;
+      --ok:#43b57e; --ok-soft:#122a20; --bad:#e5716b; --bad-soft:#2c1817;
+      --amber:#e6a53f;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 34px rgba(0,0,0,.42);
+    }
+  }
+  :root[data-theme="light"]{
+    --paper:#eef2f6; --surface:#ffffff; --surface-2:#f4f7fa;
+    --ink:#141d28; --muted:#5a6b7b; --line:#dbe3ea; --line-strong:#c4d0da;
+    --accent:#0e8a86; --accent-ink:#0a615e; --accent-soft:#dcefee;
+    --ok:#2f9e68; --ok-soft:#e2f2e9; --bad:#d64a44; --bad-soft:#fbe6e5;
+    --amber:#dd9021;
+    --shadow:0 1px 2px rgba(20,29,40,.06),0 8px 30px rgba(20,29,40,.08);
+  }
+  :root[data-theme="dark"]{
+    --paper:#0d141b; --surface:#151f29; --surface-2:#1a2632;
+    --ink:#e9f0f5; --muted:#93a5b4; --line:#26323e; --line-strong:#33424f;
+    --accent:#25b3ab; --accent-ink:#8fe0da; --accent-soft:#123331;
+    --ok:#43b57e; --ok-soft:#122a20; --bad:#e5716b; --bad-soft:#2c1817;
+    --amber:#e6a53f;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 34px rgba(0,0,0,.42);
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{font-family:var(--sans); color:var(--ink); background:var(--paper); min-height:100vh; line-height:1.55;
+    padding:clamp(16px,4vw,48px) 16px 56px; display:flex; flex-direction:column; align-items:center; -webkit-font-smoothing:antialiased;}
+  .app{width:100%; max-width:660px}
+  .eyebrow{font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-ink); font-weight:600;}
+  h1{font-size:clamp(28px,6vw,42px); line-height:1.08; margin:.28em 0 .1em; letter-spacing:-.02em; text-wrap:balance}
+  h2{font-size:clamp(20px,4.5vw,25px); line-height:1.25; margin:0; letter-spacing:-.01em; text-wrap:balance}
+  p{margin:.5em 0}
+  .lead{color:var(--muted); font-size:16px; max-width:52ch}
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow);}
+  .head{margin-bottom:26px}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  @media (max-width:480px){.grid{grid-template-columns:1fr}}
+  .lec{text-align:left; cursor:pointer; padding:16px 16px 15px; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    display:flex; flex-direction:column; gap:6px; transition:transform .12s ease, border-color .12s ease, box-shadow .12s ease; font:inherit; color:inherit;}
+  .lec:hover{border-color:var(--accent); transform:translateY(-2px); box-shadow:var(--shadow)}
+  .lec:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  .lec .code{font-family:var(--mono); font-size:12px; font-weight:600; letter-spacing:.06em; color:var(--accent-ink); background:var(--accent-soft); align-self:flex-start; padding:2px 8px; border-radius:999px;}
+  .lec .name{font-weight:650; font-size:16.5px; line-height:1.25}
+  .lec .topic{color:var(--muted); font-size:13.5px; line-height:1.4}
+  .lec .meta{margin-top:2px; font-family:var(--mono); font-size:11.5px; letter-spacing:.05em; color:var(--muted)}
+  .btn{font:inherit; font-weight:600; cursor:pointer; border-radius:11px; padding:12px 20px; border:1px solid transparent; transition:filter .12s ease, background .12s ease, border-color .12s ease;}
+  .btn-primary{background:var(--accent); color:#fff; border-color:var(--accent)}
+  .btn-primary:hover{filter:brightness(1.06)}
+  .btn-primary:disabled{opacity:.45; cursor:not-allowed; filter:none}
+  .btn-ghost{background:transparent; color:var(--ink); border-color:var(--line-strong)}
+  .btn-ghost:hover{border-color:var(--accent); color:var(--accent-ink)}
+  .btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  .qhead{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px}
+  .qhead .lecname{font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+  .bar{height:6px; background:var(--line); border-radius:999px; overflow:hidden; margin-bottom:22px}
+  .bar > i{display:block; height:100%; width:0; background:var(--accent); border-radius:999px; transition:width .35s cubic-bezier(.4,0,.2,1)}
+  .qbody{padding:clamp(18px,4vw,28px)}
+  .qcount{font-family:var(--mono); font-size:12px; letter-spacing:.06em; color:var(--accent-ink); font-variant-numeric:tabular-nums}
+  .qtext{font-size:clamp(18px,3.6vw,21px); font-weight:600; line-height:1.4; margin:8px 0 20px; letter-spacing:-.01em; text-wrap:pretty}
+  .opts{display:flex; flex-direction:column; gap:10px}
+  .opt{display:flex; align-items:flex-start; gap:12px; width:100%; text-align:left; font:inherit; background:var(--surface-2); border:1.5px solid var(--line); border-radius:12px;
+    padding:13px 15px; cursor:pointer; color:var(--ink); transition:border-color .12s ease, background .12s ease, transform .06s ease;}
+  .opt:hover{border-color:var(--line-strong)}
+  .opt:active{transform:scale(.995)}
+  .opt:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  .opt .key{font-family:var(--mono); font-weight:600; font-size:13px; line-height:1.5; width:26px; height:26px; flex:0 0 26px; border-radius:7px; display:grid; place-items:center; background:var(--surface); border:1px solid var(--line-strong); color:var(--muted);}
+  .opt .lab{font-size:15.5px; line-height:1.45; padding-top:2px}
+  .opt[aria-pressed="true"]{border-color:var(--accent); background:var(--accent-soft)}
+  .opt[aria-pressed="true"] .key{background:var(--accent); border-color:var(--accent); color:#fff}
+  .qnav{display:flex; justify-content:space-between; align-items:center; margin-top:22px; gap:12px}
+  .rtop{display:flex; align-items:center; gap:20px; padding:clamp(18px,4vw,26px); flex-wrap:wrap}
+  .ring{position:relative; width:104px; height:104px; flex:0 0 104px}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .num{position:absolute; inset:0; display:grid; place-items:center; font-family:var(--mono); font-weight:600; font-size:23px; font-variant-numeric:tabular-nums; letter-spacing:-.01em}
+  .verdict{flex:1; min-width:200px}
+  .verdict h2{margin-bottom:4px}
+  .verdict p{color:var(--muted); margin:0}
+  .review{display:flex; flex-direction:column; gap:12px; margin-top:20px}
+  .rev{border:1px solid var(--line); border-left-width:4px; border-radius:12px; background:var(--surface); padding:14px 16px}
+  .rev.correct{border-left-color:var(--ok)}
+  .rev.wrong{border-left-color:var(--bad)}
+  .rev .rq{display:flex; gap:10px; align-items:baseline}
+  .rev .rq .n{font-family:var(--mono); font-size:12px; color:var(--muted); flex:0 0 auto}
+  .rev .rqt{font-weight:600; font-size:15.5px; line-height:1.4}
+  .rev .line{display:flex; gap:8px; align-items:baseline; font-size:14px; margin-top:8px}
+  .rev .line .ic{font-family:var(--mono); font-weight:700; flex:0 0 auto}
+  .rev .yours .ic{color:var(--bad)} .rev .right .ic{color:var(--ok)}
+  .rev .yours{color:var(--muted)}
+  .rev .why{margin-top:9px; font-size:13.5px; color:var(--muted); line-height:1.55; border-top:1px dashed var(--line); padding-top:9px}
+  .rbtns{display:flex; gap:12px; margin-top:22px; flex-wrap:wrap}
+  .foot{max-width:660px; width:100%; margin-top:30px; color:var(--muted); font-size:12.5px; text-align:center; font-family:var(--mono); letter-spacing:.03em}
+  .foot b{color:var(--ink); font-weight:600}
+  [hidden]{display:none !important}
+  @media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="app">
+    <section class="screen" id="screen-start" aria-label="Choose a lecture">
+      <div class="head">
+        <span class="eyebrow">Statistics for Forensic Science</span>
+        <h1>Knowledge Check</h1>
+        <p class="lead">Pick a lecture and answer a set of quick concept questions. Nothing is graded &mdash; the answers and short explanations are revealed at the end. </p>
+      </div>
+      <div class="grid" id="lecgrid"></div>
+    </section>
+
+    <section class="screen" id="screen-quiz" hidden aria-label="Quiz">
+      <div class="qhead">
+        <span class="lecname" id="q-lecname">Lecture</span>
+        <button class="btn btn-ghost" id="q-quit" style="padding:7px 12px;font-size:13px">Exit</button>
+      </div>
+      <div class="bar"><i id="q-bar"></i></div>
+      <div class="card qbody">
+        <div class="qcount" id="q-count">Question 1 / 5</div>
+        <div class="qtext" id="q-text"></div>
+        <div class="opts" id="q-opts" role="group" aria-label="Answer options"></div>
+      </div>
+      <div class="qnav">
+        <button class="btn btn-ghost" id="q-prev">Back</button>
+        <button class="btn btn-primary" id="q-next" disabled>Next</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-results" hidden aria-label="Results" tabindex="-1">
+      <div class="card">
+        <div class="rtop">
+          <div class="ring" aria-hidden="true">
+            <svg width="104" height="104" viewBox="0 0 104 104">
+              <circle cx="52" cy="52" r="46" fill="none" stroke="var(--line)" stroke-width="9"></circle>
+              <circle id="ring-fg" cx="52" cy="52" r="46" fill="none" stroke="var(--accent)" stroke-width="9" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="289"></circle>
+            </svg>
+            <div class="num" id="ring-num">0/5</div>
+          </div>
+          <div class="verdict">
+            <span class="eyebrow" id="res-lec">Lecture</span>
+            <h2 id="res-title">Nice work</h2>
+            <p id="res-sub">Here is how you did.</p>
+          </div>
+        </div>
+      </div>
+      <div class="review" id="review"></div>
+      <div class="rbtns">
+        <button class="btn btn-primary" id="r-retry">Retry this lecture</button>
+        <button class="btn btn-ghost" id="r-home">Choose another lecture</button>
+      </div>
+    </section>
+  </div>
+  <div class="foot">STATIF &middot; SELF-TEST; <b></b></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============================================================
+     QUESTION BANK
+     Each question: { t:"text", o:["opt","opt",...], a:<index of correct option, 0-based>, w:"explanation" }
+     The app shuffles the option order at play time, so the correct answer
+     lands in a different position each time (its `a` index can stay put).
+     To add/remove questions, edit the arrays below and re-upload this file.
+     ============================================================ */
+  var QUIZZES = {
+    L1:{name:"Probability & Evidence", topic:"Conditional probability, independence, Bayes, counting", q:[
+      {t:"Two events are mutually exclusive (they cannot occur together) and both have positive probability. They are therefore:", o:["independent","dependent","equally likely","complementary"], a:1, w:"Mutually exclusive means P(A∩B)=0, but independence needs P(A∩B)=P(A)P(B)>0 — so they cannot be independent."},
+      {t:"“Independent” and “mutually exclusive” are:", o:["one implication of the other","different ideas — independence is about not affecting the probability of each other, disjointness is about overlap","both equivalent to P(A∩B)=0","both equivalent to P(A∪B)=1"], a:1, w:"Disjoint events cannot occur together; independent events carry no information about each other. Different concepts."},
+      {t:"The conditional probability P(A|B) is:", o:["the probability of B given A","the probability of A once we know that B has occurred","P(A)·P(B)","the probability that A and B both occur"], a:1, w:"P(A|B) re-weights the probability of A using the information that B happened."},
+      {t:"In general, P(A|B) and P(B|A) are:", o:["always equal","not equal","always complementary","never both defined"], a:1, w:"They answer different questions; swapping the condition usually changes the value."},
+      {t:"Multiplying the probabilities of two events to obtain the probability that BOTH occur is valid only when the events are:", o:["mutually exclusive","independent","equally likely","rare"], a:1, w:"P(A∩B)=P(A)P(B) only under independence; otherwise use P(A∩B)=P(A)P(B|A)."},
+      {t:"Multiplying the match frequencies at several DNA loci to obtain a whole-profile frequency assumes the loci are:", o:["rare","independent","numerous","on the same chromosome"], a:1, w:"The product rule needs independence; correlated loci make the product an underestimate."},
+      {t:"The complement rule states that P(not A) equals:", o:["1/P(A)","1 − P(A)","P(A) − 1","1 + P(A)"], a:1, w:"An event and its complement have probabilities that sum to 1."},
+      {t:"Bayes' rule is a tool for:", o:["proving a hypothesis","updating the probability of a hypothesis after observing evidence","computing a sample mean","testing for independence"], a:1, w:"Bayes turns a prior belief plus evidence into an updated (posterior) probability."},
+      {t:"The three ways of assigning a probability discussed in the course are classical (from a model), relative frequency (from repeated trials), and:", o:["subjective (a personal degree of belief)","conditional","hypergeometric","cumulative"], a:0, w:"The third is subjective probability — a degree of belief, central to expert judgement."},
+      {t:"If A and B are independent, then their complements Ā and B̄ are:", o:["mutually exclusive","also independent","dependent","equal"], a:1, w:"Independence carries over to the complements."},
+      {t:"In counting problems, permutations (rather than combinations) are used when:", o:["the items are identical","the order of selection matters","we draw with replacement","the sample is large"], a:1, w:"Permutations count ordered arrangements; combinations count unordered subsets."},
+      {t:"The total probability rule obtains P(B) by:", o:["multiplying P(A) and P(B)","summing the probability of B over a set of mutually exclusive, exhaustive cases","dividing P(A∩B) by P(A)","taking a complement"], a:1, w:"Split the sample space into cases E1,...Ek and sum the probabilities P(B∩Ei) over i=1,...,k."},
+      {t:"Suppose P(B) is extremely small but positive. The conditional probability P(A|B):", o:["must also be very small","can be anything between 0 and 1","must equal P(A)","is undefined"], a:1, w:"A rare condition B says nothing on its own about how likely A is once B is given."}
+    ]},
+    L2:{name:"Discrete Distributions", topic:"Binomial, Poisson, hypergeometric; mean, variance, covariance", q:[
+      {t:"A random variable is:", o:["a fixed number","an outcome of a random experiment","always discrete","the same as a probability"], a:1, w:"It attaches a qualitative or quantitative value to each outcome of a random experiment."},
+      {t:"The expectation E[X] is best understood as:", o:["the most likely value","the long-run average value over many repetitions","the middle value","a number computed from a data set"], a:1, w:"Expectation is the theoretical long-run mean — not necessarily the most likely value."},
+      {t:"The expectation and variance of a random variable are:", o:["computed from a data sample","theoretical quantities fixed by the distribution (no data needed)","always equal","always whole numbers"], a:1, w:"They are properties of the distribution; the sample mean/variance (from data) are separate."},
+      {t:"The variance of a random variable measures:", o:["its average","how spread out its values are around the mean","its most likely value","the number of possible outcomes"], a:1, w:"Variance is the average squared distance from the mean — a measure of spread."},
+      {t:"The number of successes in a fixed number of independent trials with the same success probability (sampling with replacement) follows a:", o:["Poisson distribution","binomial distribution","hypergeometric distribution","uniform distribution"], a:1, w:"Fixed n independent trials with constant p give a binomial distribution."},
+      {t:"When we sample WITHOUT replacement from a finite population, the number of “successes” drawn follows a:", o:["binomial distribution","hypergeometric distribution","Poisson distribution","normal distribution"], a:1, w:"Without replacement the draws are not independent, giving a hypergeometric distribution."},
+      {t:"The Poisson distribution is the natural model for:", o:["a single yes/no trial","the number of rare, independent events in a fixed interval of time or space","drawing without replacement","a continuous measurement"], a:1, w:"Poisson counts rare, independent events occurring at a constant rate."},
+      {t:"For a Poisson distribution, the mean and the variance are:", o:["unrelated","equal","always equal to 1","reciprocals of each other"], a:1, w:"Both the mean and the variance equal λ."},
+      {t:"The binomial distribution can be well approximated by a Poisson distribution when:", o:["n is small","n is large and p is small (with np moderate)","p = 1/2","the trials are dependent"], a:1, w:"Many trials, each rarely successful, give approximately Poisson(np)."},
+      {t:"For INDEPENDENT random variables, the variance of their sum equals:", o:["the product of the variances","the sum of the variances","zero","the difference of the variances"], a:1, w:"Variances of independent variables add."},
+      {t:"If Y = aX + b, then Var(Y) equals:", o:["a·Var(X)","a²·Var(X)","a²·Var(X) + b","Var(X) + b"], a:1, w:"Scaling by a multiplies the variance by a²; the shift b does not affect spread."}
+    ]},
+    L3:{name:"Continuous Distributions & the CLT", topic:"Density & CDF, normal, standardisation, the sample mean", q:[
+      {t:"For a continuous random variable, the probability of any single exact value is:", o:["equal to the density there","0","1","equal to the CDF there"], a:1, w:"Only intervals (areas) carry probability; a single exact point has probability 0."},
+      {t:"For a continuous variable, a probability is obtained as:", o:["the height of the density","an area under the density curve","a sum of individual probabilities","the slope of the density"], a:1, w:"P(a ≤ X ≤ b) is the area under the density between a and b."},
+      {t:"Unlike a probability, the value of a density function f(x):", o:["must be at most 1","can be greater than 1","must be 0 or 1","is always negative"], a:1, w:"A density is not a probability; only the total area (which must be 1) is constrained."},
+      {t:"The total area under a probability density function equals:", o:["the mean","1","the variance","the peak height"], a:1, w:"All the probability must sum to 1, i.e. the total area is 1."},
+      {t:"A cumulative distribution function F(x) is:", o:["decreasing","non-decreasing, rising from 0 to 1","always a straight line","the same as the density"], a:1, w:"F accumulates probability, rising from 0 to 1 as x increases."},
+      {t:"Standardising a value as z = (x − μ)/σ tells you:", o:["the probability of x","how many standard deviations x lies from the mean","the density at x","the variance"], a:1, w:"The z-score measures distance from the mean in standard-deviation units."},
+      {t:"For a uniform distribution on an interval, the density is:", o:["bell-shaped","constant over the interval","increasing","zero everywhere"], a:1, w:"All values in the interval are equally likely, so the density is flat."},
+      {t:"The Central Limit Theorem concerns the distribution of:", o:["the individual measurements","the sample mean (or the sum)","the whole population","the variance"], a:1, w:"The CLT is a statement about the sample mean or sum — not the individual values."},
+      {t:"The power of the Central Limit Theorem is that the sample mean is approximately normal:", o:["only when the data are already normal","for large n, whatever the shape of the parent distribution (with finite variance)","only for discrete data","only for small samples"], a:1, w:"It holds for almost any parent distribution once n is large — which is why the normal is everywhere."},
+      {t:"As the sample size n increases, the variance of the sample mean X̄:", o:["increases","decreases (it equals σ²/n)","stays the same","becomes negative"], a:1, w:"Averaging more data sharpens the estimate; the spread shrinks like 1/√n."},
+      {t:"“In a large sample, each individual measurement is approximately normal.” This is:", o:["true — that is the CLT","false — the CLT is about the sample mean, not the individual values","true only for the uniform distribution","always true"], a:1, w:"A common misconception: the CLT normalises the mean, not the raw measurements."},
+      {t:"About 95% of the values of a normal distribution lie within:", o:["1 standard deviation of the mean","2 standard deviations of the mean","3 standard deviations of the mean","the entire range"], a:1, w:"The 68–95–99.7 rule: about 95% fall within ±2σ."},
+      {t:"The normal distribution is:", o:["skewed to the right","symmetric about its mean","defined only for positive values","always the standard normal"], a:1, w:"It is a symmetric bell curve centred at its mean μ."},
+ {t:"Two random variables with zero covariance are:", o:["necessarily independent","uncorrelated, but not necessarily independent","necessarily identical","necessarily dependent"], a:1, w:"Zero covariance rules out only a linear relationship; dependence can still exist."},
+      {t:"If two random variables are independent, then their covariance is:", o:["1","0","undefined","always negative"], a:1, w:"Independence implies zero covariance (the converse is not true)."},
+      {t:"Compared with the covariance, the correlation coefficient has the advantage that it:", o:["is always positive","does not depend on the units of measurement and lies between −1 and 1","is easier to compute","equals the variance"], a:1, w:"Correlation is a unit-free, bounded measure of linear association."},
+      {t:"A negative covariance between two measurements means that:", o:["they are independent","when one tends to increase, the other tends to decrease","one is always larger than the other","they are uncorrelated"], a:1, w:"Negative covariance: the two tend to move in opposite directions relative to their means."}
+    ]},
+    L4:{name:"Estimation & Confidence Intervals", topic:"Estimators, unbiasedness, CIs, the logic of testing", q:[
+      {t:"A population parameter (such as a true mean) is:", o:["computed from the sample","a fixed but unknown quantity","random","always known in advance"], a:1, w:"Parameters are fixed truths we try to learn; the estimates from data are what vary."},
+      {t:"An estimate (such as a sample mean) is:", o:["fixed and known","a quantity computed from data that varies from sample to sample","the true value","always unbiased"], a:1, w:"Different samples give different estimates — the estimate is random."},
+      {t:"An estimator is called unbiased when:", o:["its variance is zero","its expected value equals the parameter it estimates","it equals the parameter in every sample","it is normally distributed"], a:1, w:"Unbiased means correct on average, with no systematic error."},
+      {t:"Between two unbiased estimators, the more efficient one has:", o:["the larger variance","the smaller variance","the larger bias","the simpler formula"], a:1, w:"Among unbiased estimators, the efficient one scatters least around the truth."},
+      {t:"We divide the sample variance by (n − 1) rather than n in order to:", o:["make it smaller","make it an unbiased estimator of the population variance","simplify the formula","force the data to be normal"], a:1, w:"Dividing by n underestimates σ²; the n−1 correction removes that bias."},
+      {t:"A 95% confidence interval is correctly interpreted as:", o:["95% of the data lie inside it","over repeated samples, about 95% of such intervals contain the true value","the estimate is 95% accurate","the parameter is inside with certainty"], a:1, w:"Confidence is a long-run property of the procedure, not of one particular interval."},
+      {t:"In the confidence-interval statement, the quantity that is RANDOM is:", o:["the parameter","the interval (its endpoints)","the confidence level","nothing"], a:1, w:"The parameter is fixed; the interval, built from data, is what varies."},
+      {t:"Increasing the sample size, at a fixed confidence level, makes the confidence interval:", o:["wider","narrower","unchanged","invalid"], a:1, w:"More data means less uncertainty, so a narrower interval."},
+      {t:"Raising the confidence level from 90% to 99% with the same data makes the interval:", o:["narrower","wider","unchanged","shift to the left"], a:1, w:"Catching the parameter more often requires a wider interval."},
+      {t:"In the criminal-trial analogy, the null hypothesis H₀ corresponds to:", o:["guilt","innocence (presumed true until the evidence is strong enough)","the verdict","the evidence"], a:1, w:"H₀ is the default (innocence), rejected only with strong evidence."},
+      {t:"A Type I error is:", o:["failing to reject a false H₀","rejecting a true H₀","an arithmetic mistake","drawing too small a sample"], a:1, w:"Type I = convicting the innocent (rejecting a true null)."},
+      {t:"The significance level α of a test is:", o:["the probability of a Type II error","the (small, chosen) probability of a Type I error","the p-value","the power"], a:1, w:"α caps the probability of wrongly rejecting a true H₀."},
+      {t:"“Do not reject H₀” should be read as:", o:["H₀ has been proven true","there is not enough evidence against H₀ (not proof that it is true)","H₁ is false","the test has failed"], a:1, w:"Absence of evidence against H₀ is not proof that H₀ holds."},
+      {t:"Statistical inference is the task of:", o:["summarising a data set","drawing conclusions about an unknown population from a sample","proving a theorem","collecting the data"], a:1, w:"Inference reasons from the sample to the population."}
+    ]},
+    L5:{name:"Hypothesis Testing", topic:"p-values, one/two-sided, power, the t-test", q:[
+      {t:"The p-value of a test is:", o:["the probability that H₀ is true","the probability of a result at least as extreme as observed, assuming H₀ is true","the significance level","the power of the test"], a:1, w:"p = P(data this extreme | H₀); it is computed assuming H₀ holds."},
+      {t:"We reject H₀ when:", o:["the p-value is large","the p-value is smaller than the significance level α","H₁ looks plausible","the sample is large"], a:1, w:"Reject H₀ exactly when p < α."},
+      {t:"A very small p-value is:", o:["proof that H₁ is true","strong evidence against H₀","the probability that H₀ is true","evidence in favour of H₀"], a:1, w:"Small p means the data would be surprising under H₀ — evidence against it."},
+      {t:"“A p-value of 0.03 means there is a 3% probability that H₀ is true.” This interpretation is:", o:["correct","incorrect — the p-value is computed assuming H₀; it is not the probability of H₀","correct only for large n","correct only for two-sided tests"], a:1, w:"The p-value is P(data | H₀), not P(H₀ | data)."},
+      {t:"A one-sided (rather than two-sided) alternative is appropriate when:", o:["the sample is small","only a departure in one direction is of interest","the variance is unknown","always"], a:1, w:"Use a one-sided test when only an increase, or only a decrease, is relevant."},
+      {t:"The power of a test is:", o:["the probability of a Type I error","the probability of correctly rejecting a false H₀ (that is, 1 − Type II error)","the significance level","the p-value"], a:1, w:"Power is the chance of detecting a false H₀."},
+      {t:"Increasing the sample size, other things equal, makes the power of a test:", o:["smaller","larger","unchanged","zero"], a:1, w:"More data makes a true effect easier to detect."},
+      {t:"Choosing a smaller α (being stricter about Type I errors) tends to:", o:["lower the Type II error","raise the Type II error (and lower the power)","leave the Type II error unchanged","raise the power"], a:1, w:"There is a trade-off: guarding harder against Type I raises the Type II error."},
+      {t:"A study reports “no significant difference.” This most safely means:", o:["the groups are proven to be equal","the data did not provide enough evidence of a difference (possibly a power or sample-size issue)","H₀ is true","the test was invalid"], a:1, w:"“Not significant” is not proof of “no difference” — it can simply be low power."},
+      {t:"When the population standard deviation is unknown and estimated from a small sample, the test for the mean uses the:", o:["standard normal distribution","t-distribution","chi-square distribution","uniform distribution"], a:1, w:"Estimating σ by S with a small n leads to Student's t-distribution."},
+      {t:"Compared with the standard normal, the t-distribution has:", o:["a different mean","heavier tails, approaching the normal as the sample size grows","no variance","a single fixed shape"], a:1, w:"The extra uncertainty from estimating σ fattens the tails; t → normal as the df grow."},
+      {t:"A 95% confidence interval and a two-sided test at α = 5% are linked: the interval is exactly the set of:", o:["observed data values","null values that the test would not reject","values covering 95% of the data","rejected values"], a:1, w:"CI–test duality: the values inside the interval are precisely the non-rejected nulls."},
+      {t:"The essential logic shared by every hypothesis test is:", o:["to prove H₁","assume H₀, then ask whether the data would be too unlikely under H₀ to be mere chance","to compute the sample mean","to maximise the power"], a:1, w:"Assume the null, then judge whether the data are too extreme to be coincidence."}
+    ]},
+    L6:{name:"More Tests & the Common Recipe", topic:"Chi-square, goodness-of-fit, two samples, choosing a test", q:[
+      {t:"The chi-square distribution:", o:["is symmetric about zero","takes only positive values and is right-skewed","can be negative","is identical to the normal"], a:1, w:"It arises from squared quantities, so it is positive and right-skewed."},
+      {t:"The chi-square distribution is determined by a single parameter, its:", o:["mean","number of degrees of freedom","variance","significance level"], a:1, w:"Its shape depends only on the degrees of freedom."},
+      {t:"To test whether the variance of a normal population equals a specified value, the test is based on the:", o:["normal distribution","chi-square distribution","t-distribution","uniform distribution"], a:1, w:"(n−1)S²/σ₀² follows a chi-square distribution with n−1 degrees of freedom."},
+      {t:"A Chi-square goodness-of-fit test compares:", o:["two sample means","observed category counts with the counts expected under a hypothesis","two variances","a mean with a variance"], a:1, w:"It measures how far the observed counts fall from those expected under H₀."},
+      {t:"In a goodness-of-fit test, a large value of the chi-square statistic indicates:", o:["observed and expected counts agree closely","observed counts differ substantially from expected — evidence against H₀","a large sample","independence of the categories"], a:1, w:"Big gaps between observed and expected counts produce a large χ² and lead to rejecting H₀."},
+      {t:"Chi-square goodness-of-fit and variance tests reject H₀:", o:["for small values of the statistic","for large values (an upper-tail test)","in both tails equally","never"], a:1, w:"Evidence against H₀ appears as a large statistic in the upper tail."},
+      {t:"To compare the means of two independent samples, the variability in the denominator of the test statistic is found by:", o:["subtracting the two variances","adding the two variances (each divided by its sample size)","multiplying the variances","using only one sample's variance"], a:1, w:"Variances of independent samples add: the standard error is √(S₁²/n + S₂²/m)."},
+      {t:"Across the z-, t- and chi-square tests, what stays the SAME is:", o:["the test statistic","the overall procedure: assumptions, hypotheses, statistic, rejection region, decision, conclusion","the distribution used","the parameter being tested"], a:1, w:"Every test follows the same six-step recipe."},
+      {t:"What CHANGES from one test to another is:", o:["the significance level","the test statistic and its distribution under H₀","the underlying logic of testing","the meaning of the p-value"], a:1, w:"Only the test statistic and its null distribution differ between tests."},
+      {t:"To pick an appropriate test for a new situation, you first identify:", o:["the sample size only","the parameter of interest, its estimator, and that estimator's distribution under H₀","which software to use","the confidence level"], a:1, w:"That is how you handle a test you were never explicitly taught."},
+      {t:"A key practical message of the testing part of the course is that:", o:["every new problem needs a brand-new method","most tests share the same reasoning, so you can apply tests you were never explicitly taught","the normal distribution is always the right choice","assumptions rarely matter"], a:1, w:"Master the shared recipe and you can tackle unfamiliar tests with confidence."}
+    ]}
+  };
+
+  var order = ["L1","L2","L3","L4","L5","L6"];
+  var $ = function(id){return document.getElementById(id);};
+  var screens = {start:$("screen-start"), quiz:$("screen-quiz"), results:$("screen-results")};
+  function show(name){for(var k in screens){screens[k].hidden = (k!==name);}}
+  function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+
+  (function buildGrid(){
+    var g = $("lecgrid");
+    order.forEach(function(key){
+      var Q = QUIZZES[key];
+      var b = document.createElement("button");
+      b.className = "lec"; b.type="button";
+      b.innerHTML = '<span class="code">'+key+'</span><span class="name"></span><span class="topic"></span><span class="meta">'+Q.q.length+' questions</span>';
+      b.querySelector(".name").textContent = Q.name;
+      b.querySelector(".topic").textContent = Q.topic;
+      b.addEventListener("click", function(){ startQuiz(key); });
+      g.appendChild(b);
+    });
+  })();
+
+  var state = null;
+  var LETTERS = ["A","B","C","D","E"];
+
+  function startQuiz(key){
+    var Q = QUIZZES[key];
+    var seq = shuffle(Q.q.map(function(_,i){return i;}));
+    var opt = seq.map(function(qi){ return shuffle(Q.q[qi].o.map(function(_,i){return i;})); });
+    state = {key:key, seq:seq, opt:opt, idx:0, answers:seq.map(function(){return null;})};
+    $("q-lecname").textContent = key+" · "+Q.name;
+    show("quiz");
+    renderQuestion();
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  function renderQuestion(){
+    var Q = QUIZZES[state.key];
+    var item = Q.q[state.seq[state.idx]];
+    var ord = state.opt[state.idx];
+    var total = state.seq.length;
+    $("q-count").textContent = "Question "+(state.idx+1)+" / "+total;
+    $("q-text").textContent = item.t;
+    $("q-bar").style.width = (state.idx/total*100)+"%";
+
+    var box = $("q-opts"); box.innerHTML="";
+    ord.forEach(function(origIdx, slot){
+      var b = document.createElement("button");
+      b.className="opt"; b.type="button";
+      b.setAttribute("aria-pressed", state.answers[state.idx]===origIdx ? "true":"false");
+      b.innerHTML = '<span class="key">'+LETTERS[slot]+'</span><span class="lab"></span>';
+      b.querySelector(".lab").textContent = item.o[origIdx];
+      b.addEventListener("click", function(){
+        state.answers[state.idx]=origIdx;
+        Array.prototype.forEach.call(box.children, function(c, ci){ c.setAttribute("aria-pressed", ord[ci]===origIdx ? "true":"false"); });
+        $("q-next").disabled=false;
+      });
+      box.appendChild(b);
+    });
+
+    $("q-prev").style.visibility = state.idx===0 ? "hidden":"visible";
+    $("q-next").disabled = state.answers[state.idx]===null;
+    $("q-next").textContent = state.idx===total-1 ? "See results" : "Next";
+  }
+
+  $("q-next").addEventListener("click", function(){
+    if(state.answers[state.idx]===null) return;
+    if(state.idx < state.seq.length-1){ state.idx++; renderQuestion(); }
+    else { renderResults(); }
+  });
+  $("q-prev").addEventListener("click", function(){ if(state.idx>0){ state.idx--; renderQuestion(); } });
+  $("q-quit").addEventListener("click", function(){ show("start"); window.scrollTo({top:0,behavior:"smooth"}); });
+
+  function renderResults(){
+    var Q = QUIZZES[state.key];
+    var total = state.seq.length, score=0;
+    state.seq.forEach(function(qi,pos){ if(state.answers[pos]===Q.q[qi].a) score++; });
+
+    var pct = score/total, circ = 2*Math.PI*46, fg = $("ring-fg");
+    fg.style.transition="none"; fg.style.strokeDashoffset=circ;
+    fg.setAttribute("stroke", pct>=0.8?"var(--ok)":(pct<0.5?"var(--bad)":"var(--accent)"));
+    $("ring-num").textContent = score+"/"+total;
+    setTimeout(function(){ fg.style.transition="stroke-dashoffset .9s cubic-bezier(.4,0,.2,1)"; fg.style.strokeDashoffset = circ*(1-pct); },40);
+
+    $("res-lec").textContent = state.key+" · "+Q.name;
+    var title, sub;
+    if(pct===1){title="Flawless — all correct."; sub="You have this lecture down. Try another one.";}
+    else if(pct>=0.8){title="Strong work."; sub="A solid grasp of this lecture, with a small gap or two below.";}
+    else if(pct>=0.5){title="Getting there."; sub="A reasonable start — read the explanations below, then retake.";}
+    else {title="Worth another look."; sub="Read the explanations below and revisit the lecture, then try again.";}
+    $("res-title").textContent = title; $("res-sub").textContent = sub;
+
+    var rev = $("review"); rev.innerHTML="";
+    state.seq.forEach(function(qi,pos){
+      var item = Q.q[qi], picked = state.answers[pos], right = item.a, ok = picked===right;
+      var d = document.createElement("div");
+      d.className = "rev "+(ok?"correct":"wrong");
+      var html = '<div class="rq"><span class="n">'+(pos+1)+'</span><span class="rqt"></span></div>';
+      if(!ok){ html += '<div class="line yours"><span class="ic">✗</span><span class="ytext"></span></div>'; }
+      html += '<div class="line right"><span class="ic">✓</span><span class="rtext"></span></div><div class="why"></div>';
+      d.innerHTML = html;
+      d.querySelector(".rqt").textContent = item.t;
+      if(!ok){ d.querySelector(".ytext").textContent = "Your answer: "+item.o[picked]; }
+      d.querySelector(".rtext").textContent = (ok?"Correct: ":"Correct answer: ")+item.o[right];
+      d.querySelector(".why").textContent = item.w;
+      rev.appendChild(d);
+    });
+
+    show("results");
+    screens.results.focus();
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  $("r-retry").addEventListener("click", function(){ startQuiz(state.key); });
+  $("r-home").addEventListener("click", function(){ show("start"); window.scrollTo({top:0,behavior:"smooth"}); });
+})();
+</script>
+</body>
+</html>
